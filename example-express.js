@@ -19,7 +19,7 @@ app.use(bodyParser.json());
 app.use(express.static('fixtures'));
 app.use(morgan('dev'));
 
-app.post('/offer', async (req, res) => {
+app.post('/offer1', async (req, res) => {
   const { type, sdp: offer } = req.body;
 
   assert.strictEqual(type, 'offer', 'Expected an SDP offer');

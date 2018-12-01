@@ -3,7 +3,7 @@
 /* eslint-env browser */
 
 const pcconfig = {
-  iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
+  iceServers: [{ urls: 'stun:stun4.l.google.com:19302' }],
 };
 
 const pc = new RTCPeerConnection(pcconfig);
@@ -17,6 +17,9 @@ pc.addEventListener('icecandidate', async ({ candidate }) => {
 
   const offer = pc.localDescription;
   console.log('[pc] send offer\n', offer.sdp);
+  var str=CryptoJS.enc.Utf8.parse(offer.sdp);
+  var base64=CryptoJS.enc.Base64.stringify(str);
+  console.log(base64)
   const answer = await sendOffer(offer);
   console.log('[pc] got answer\n', answer.sdp);
   await pc.setRemoteDescription(answer);
@@ -80,3 +83,18 @@ async function sendOffer(offer) {
 
   return res.json();
 }
+
+$(document).ready(function (){
+  $('#answer').click(()=>{
+    var line=$('#sdp').val();
+    const offer  = CryptoJS.enc.Base64.parse(line).toString(CryptoJS.enc.Utf8);
+    console.log('[rtc] got offer\n', offer);
+    var answer = { sdp: offer, type: 'answer' };
+    pc.setRemoteDescription(answer);
+  });
+  $('#send').click(()=>{
+    var line=$('#msg').val();
+    console.log('send:'+msg);
+    channel.send(line);
+  })
+});

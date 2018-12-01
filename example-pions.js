@@ -28,6 +28,24 @@ stdin.once('line', async line => {
 
   console.log('[rtc] create answer\n', answer);
   console.log(Buffer.from(answer).toString('base64'));
+  session.once('channel', channel => {
+    console.log('[nodertc] got channel %s', channel.label);
+  
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+    });
+  
+    rl.on('line', line => {
+      channel.write(line);
+    });
+  
+    channel.on('data', data => {
+      console.log(`${data.toString()}`);
+  
+      rl.prompt();
+    });
+  });
 });
 
 webrtc.once('ready', () => {
@@ -35,5 +53,6 @@ webrtc.once('ready', () => {
 
   stdin.prompt();
 });
+
 
 webrtc.start();
